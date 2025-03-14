@@ -1,0 +1,986 @@
+\documentclass{article}
+
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\input{../math.tex}
+\usetikzlibrary{automata,positioning}
+
+%
+% Basic Document Settings
+%
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName}
+\chead{\hmwkClass\ }
+\rhead{\firstxmark}
+\lfoot{\lastxmark}
+\cfoot{\thepage}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+%
+% Homework Problem Environment
+%
+% This environment takes an optional argument. When given, it will adjust the
+% problem counter. This is useful for when the problems given for your
+% assignment aren't sequential. See the last 3 problems of this template for an
+% example.
+%
+\newenvironment{homeworkProblem}[1][-1]{
+    \ifnum#1>0
+        \setcounter{homeworkProblemCounter}{#1}
+    \fi
+    \section{Problem \arabic{homeworkProblemCounter}}
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+%
+% Homework Details
+%   - Title
+%   - Due date
+%   - Class
+%   - Section/Time
+%   - Instructor
+%   - Author
+%
+
+\newcommand{\hmwkTitle}{Homework 1}
+\newcommand{\hmwkDueDate}{February 7, 2015}
+\newcommand{\hmwkClass}{CS395T Matrix and Tensor Algorithms}
+\newcommand{\hmwkClassTime}{Section A}
+\newcommand{\hmwkClassInstructor}{Professor Shashank Ubaru}
+\newcommand{\hmwkAuthorName}{}
+
+%
+% Title Page
+%
+
+% \title{
+%     \vspace{2in}
+%     \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+%     \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate\ at 3:10pm}\\
+%     \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+%     \vspace{3in}
+% }
+
+% \author{\hmwkAuthorName}
+% \date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% Various Helper Commands
+%
+
+% Useful for algorithms
+\newcommand{\alg}[1]{\textsc{\bfseries \footnotesize #1}}
+
+% For derivatives
+\newcommand{\deriv}[1]{\frac{\mathrm{d}}{\mathrm{d}x} (#1)}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+
+% Integral dx
+\newcommand{\dx}{\mathrm{d}x}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+
+\newcommand{\Bias}{\mathrm{Bias}}
+
+\begin{document}
+
+\begin{homeworkProblem}
+    \solution
+
+    \textbf{Part (i)} 
+
+By definition, 
+\[
+\| v \|_1 = \sum_{i=1}^{n} |v_i| \quad \text{and} \quad \| v \|_\infty = \max_{1 \leq i \leq n} |v_i|.
+\]
+Since each \( |v_i| \leq \| v \|_\infty \), we obtain:
+\[
+\sum_{i=1}^{n} v_i^2 \leq \sum_{i=1}^{n} |v_i| \cdot \| v \|_\infty = \| v \|_1 \| v \|_\infty.
+\]
+Thus, taking square roots gives:
+\[
+\| v \|_2^2 \leq \| v \|_1 \| v \|_\infty.
+\]\\
+
+From Cauchy-Schwarz inequality:
+\[
+\| v \|_1 = \sum_{i=1}^{n} |v_i| = \langle v,\vone \rangle \leq \sqrt{n} \left( \sum_{i=1}^{n} v_i^2 \right)^{1/2} = \sqrt{n} \| v \|_2.
+\]
+Since \( \| v \|_\infty = \max_{1 \leq i \leq n} |v_i| \) is at most \( \| v \|_2 \) (as a maximum cannot exceed the Euclidean norm in a unit vector comparison), we get:
+\[
+\| v \|_1 \| v \|_\infty \leq \sqrt{n} \| v \|_2 \| v \|_\infty \leq \sqrt{n} \| v \|_2^2.
+\]
+
+Thus, combining both inequalities, we conclude:
+\[
+\| v \|_2^2 \leq \| v \|_1 \| v \|_\infty \leq \sqrt{n} \| v \|_2^2.
+\]\\
+
+
+    \textbf{Part (ii)} 
+    \
+
+Let \(A\) be an \(m\times n\) matrix whose \(i\)-th row is denoted by \(a_i^\top\in\mathbb{R}^n\).  For a vector \(v\in\mathbb{R}^n\), the \(i\)-th component of \(A v\) is
+\[
+(A v)_i \;=\; a_i^\top v.
+\]
+Using the definition of the Euclidean norm, we have
+\[
+\|A v\|_{2}^2 
+\;=\;
+\sum_{i=1}^m (a_i^\top v)^2.
+\]
+By the Cauchy--Schwarz inequality, \((a_i^\top v)^2 \le \|a_i\|_2^2\,\|v\|_2^2\).  Hence,
+\[
+\sum_{i=1}^m (a_i^\top v)^2 
+\;\le\;
+\sum_{i=1}^m \bigl(\|a_i\|_{2}^2 \,\|v\|_2^2\bigr)
+\;=\;
+\|v\|_2^2 \,\sum_{i=1}^m \|a_i\|_2^2.
+\]
+Note that
+\[
+\sum_{i=1}^m \|a_i\|_2^2 
+\;=\;
+\sum_{i=1}^m \sum_{j=1}^n (A_{i j})^2 
+\;=\;
+\|A\|_{F}^2,
+\]
+the square of the Frobenius norm of \(A\).  Combining these inequalities,
+\[
+\|A v\|_{2}^2 
+\;\le\; 
+\|v\|_2^2\, \|A\|_{F}^2,
+\]
+which implies
+\[
+\|A v\|_{2}
+\;\le\;
+\|A\|_{F}\,\|v\|_{2}.
+\]
+by square rooting both sides of the inequality. 
+
+\textbf{Part (iii)}
+
+Let \(B\) have columns \(b_1,b_2,\dots,b_n\).  Then the \(j\)-th column of \(A B\) is \(A b_j\).  Hence
+\[
+\|A B\|_{F}^2 
+\;=\;
+\sum_{j=1}^n \|A b_j\|_{2}^2.
+\]
+By the previously shown inequality 
+\(\|A v\|_{2} \le \|A\|_{F}\,\|v\|_{2}\), we have
+\[
+\|A b_j\|_{2}^2 
+\;\le\; 
+\|A\|_{F}^2 \,\|b_j\|_{2}^2,
+\quad
+\text{for each } j.
+\]
+Adding these inequalities over \(j=1,\dots,n\),
+\[
+\sum_{j=1}^n \|A b_j\|_{2}^2 
+\;\le\;
+\sum_{j=1}^n \bigl(\|A\|_{F}^2\,\|b_j\|_{2}^2\bigr)
+\;=\;
+\|A\|_{F}^2\,\sum_{j=1}^n \|b_j\|_{2}^2.
+\]
+Therefore,
+\[
+\|A B\|_{F}^2
+\;\le\;
+\|A\|_{F}^2\,\|B\|_{F}^2,
+\]
+which implies
+\[
+\|A B\|_{F}
+\;\le\;
+\|A\|_{F}\,\|B\|_{F}.
+\]
+by square rooting both sides of the inequality.\\
+
+
+\textbf{Part (iv)}
+
+Suppose \(A\) is an \(m\times p\) matrix and \(B\) is a \(p\times n\) matrix.  Then
+\[
+\|A B\|_{F}^2 
+\;=\;
+\sum_{i=1}^m \sum_{j=1}^n \bigl(A B\bigr)_{i,j}^2 
+\;=\;
+\sum_{i=1}^m \sum_{j=1}^n 
+\Bigl(\underbrace{(A_{i,1},\,A_{i,2},\,\dots,\,A_{i,p})}_{\text{row }i \text{ of }A}
+\,\cdot\,
+\underbrace{\begin{pmatrix} B_{1,j}\\ B_{2,j}\\ \vdots \\ B_{p,j}\end{pmatrix}}_{\text{column }j \text{ of }B}\Bigr)^2.
+\]
+By the Cauchy--Schwarz inequality, for each \(i,j\):
+\[
+\Bigl(\sum_{k=1}^p A_{i,k}\,B_{k,j}\Bigr)^2 \;\le\;
+\Bigl(\sum_{k=1}^p A_{i,k}^2\Bigr)
+\Bigl(\sum_{k=1}^p B_{k,j}^2\Bigr),
+\]
+that is,
+\[
+\bigl(A B\bigr)_{i,j}^2 
+\;\le\; \| \text{row}_i(A)\|_{2}^2 \,\|\text{col}_j(B)\|_2^2.
+\]
+Summing over all \(i,j\),
+\[
+\sum_{i=1}^m\sum_{j=1}^n (A B)_{i,j}^2
+\;\le\;
+\sum_{i=1}^m \| \text{row}_i(A)\|_2^2 \sum_{j=1}^n \|\text{col}_j(B)\|_2^2.
+\]
+But
+\(\sum_{i=1}^m \|\text{row}_i(A)\|_2^2 = \|A\|_F^2\)
+and
+\(\sum_{j=1}^n \|\text{col}_j(B)\|_2^2 = \|B\|_F^2\).
+Thus
+\[
+\|A B\|_{F}^2 
+\;\le\;
+\bigl\|A\bigr\|_{F}^2\;\bigl\|B\bigr\|_{F}^2,
+\]
+which implies
+\[
+\|A B\|_{F}
+\;\le\;
+\|A\|_{F}\,\|B\|_{F},
+\]
+
+
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    \solution
+
+    \textbf{Part (i)}
+    Recall that Markov's inequality states that for any nonnegative random variable \(Y\) and any \(a>0\),
+    \[
+    \Pr \bigl(Y \ge a \bigr) \;\le\; \frac{\mathbb{E}[Y]}{a}.
+    \]
+    Here, let \(Y = X\), which is nonnegative (since \(X \in [0,1]\)).  We want to bound
+    \[
+    \Pr \bigl(X \ge \tfrac{7}{8}\bigr).
+    \]
+    Applying Markov's inequality with \(a = \tfrac{7}{8}\), we get
+    \[
+    \Pr \bigl(X \ge \tfrac{7}{8}\bigr)
+    \;\le\;
+    \frac{\mathbb{E}[X]}{\tfrac{7}{8}}
+    \;=\;
+    \frac{\tfrac{1}{2}}{\tfrac{7}{8}}
+    \;=\;
+    \frac{4}{7}.
+    \]
+    Thus Markov’s inequality gives the upper bound
+    \[
+    \Pr \bigl(X \ge \tfrac{7}{8}\bigr) \;\le\; \frac{4}{7}.
+    \]
+
+
+
+    \textbf{Part (ii)}
+
+    Chebyshev’s inequality in its usual form bounds the probability that \(X\) deviates from its mean \(\mathbb{E}[X]\) by at least some amount~\(\delta\).  Since \(X \sim \mathrm{Unif}(0,1)\), we have  
+    \[
+    \mathbb{E}[X] \;=\; \tfrac12,
+    \quad
+    \mathrm{Var}(X) \;=\; \tfrac{1}{12}.
+    \]
+    
+    Hence,
+    \[
+    \Pr\bigl(X \,\ge\, \tfrac{7}{8}\bigr)
+    ~\le~
+    \frac{1}{2}\Pr\!\Bigl(\bigl|X - \tfrac12\bigr| \,\ge\, \tfrac{3}{8}\Bigr)
+    ~\le~
+    \frac{1}{2}\frac{\mathrm{Var}(X)}{\bigl(\tfrac{3}{8}\bigr)^2}
+    \;=\;
+    \frac{1}{2}\frac{\tfrac{1}{12}}{\bigl(\tfrac{3}{8}\bigr)^2}
+    \;=\;
+    \frac{8}{27}
+    ~\approx~
+    0.2963.
+    \]
+    
+
+
+    
+    \textbf{Part (iii)}
+    Instead of applying Markov to \(X\), we can apply it to \(X^2\).  We want
+    \(\Pr(X \ge 7/8) = \Pr\bigl(X^2 \ge (7/8)^2\bigr).\)
+    By Markov,
+    \[
+    \Pr\bigl(X^2 \,\ge\, \bigl(\tfrac{7}{8}\bigr)^2\bigr)
+    ~\le~
+    \frac{\mathbb{E}[X^2]}{(7/8)^2}.
+    \]
+    Since \(X\sim \mathrm{Unif}(0,1)\), 
+    \(\mathbb{E}[X^2] = \tfrac13.\)
+    Hence
+    \[
+    \Pr\bigl(X \ge \tfrac{7}{8}\bigr)
+    ~\le~
+    \frac{\tfrac{1}{3}}{\bigl(\tfrac{7}{8}\bigr)^2}
+    ~=\;
+    \frac{1/3}{49/64}
+    ~=\;
+    \frac{64}{147}
+    ~\approx~
+    0.435.
+    \]
+
+
+
+
+
+    \textbf{Part (iv)}
+
+    More generally, for any \(q>0,\)
+    \[
+    \Pr\bigl(X \,\ge\, \tfrac{7}{8}\bigr)
+    ~\le~
+    \Pr\bigl(X^q \,\ge\, \bigl(\tfrac{7}{8}\bigr)^q\bigr)
+    ~\le~
+    \frac{\mathbb{E}[X^q]}{(7/8)^q}.
+    \]
+    Again for \(X \sim \mathrm{Unif}(0,1)\), we have \(\mathbb{E}[X^q] = \tfrac{1}{q+1}.\)  Thus
+    \[
+    \Pr\bigl(X \,\ge\, \tfrac{7}{8}\bigr)
+    ~\le~
+    \frac{\tfrac{1}{q+1}}{(7/8)^q}
+    ~=\;
+    \frac{1}{q+1}\,\bigl(\tfrac{8}{7}\bigr)^{q}.
+    \]
+    We find that the bound decreases with \(q\) at first from $q=0$ but then eventually begins to increase for very large \(q\). The bound is minimized when \(q=6\) and $q=7$.
+
+
+
+
+
+
+
+
+    \textbf{Part (v)}
+
+    A key takeaway is that Markov’s inequality applies to \(\Pr\bigl(g(X)\ge a\bigr)\le \mathbb{E}[g(X)]/a\) for \emph{any} nonnegative, monotone \(g\) and any \(a>0\).  By cleverly choosing \(g\), one can sometimes get much better bounds than by simply using the variance or raw moments.
+
+In fact, for this uniform example, we can make the Markov bound \emph{exact} by using
+\[
+g(x)
+~=~
+\begin{cases}
+0, & x < \tfrac{7}{8},\\
+1, & x \ge \tfrac{7}{8}.
+\end{cases}
+\]
+Then \(g\) is nondecreasing and 
+\(\Pr\!\bigl(X \ge \tfrac{7}{8}\bigr) \;=\; \Pr\!\bigl(g(X)\ge 1\bigr)\).  
+Applying Markov’s inequality with \(Y=g(X)\) and \(a=1\) gives
+\[
+\Pr\!\bigl(g(X)\ge 1\bigr)
+~\le~
+\frac{\mathbb{E}[\,g(X)\,]}{1}
+~=~
+\mathbb{E}[\,g(X)\,]
+~=~
+\Pr\!\bigl(X \ge \tfrac{7}{8}\bigr).
+\]
+This yields the \emph{exact} probability:
+\[
+\Pr\!\bigl(X \ge \tfrac{7}{8}\bigr)
+~\le~
+\Pr\!\bigl(X \ge \tfrac{7}{8}\bigr)
+~=~ \tfrac{1}{8}
+\]
+
+
+
+
+\end{homeworkProblem}
+
+\begin{homeworkProblem}
+    \solution
+
+    \textbf{Part (i)}
+
+    Let \(A = I - uv^\top\).  We seek a scalar \(\alpha\) such that
+\[
+A^{-1} \;=\; I \;-\; \alpha \, u\,v^\top.
+\]
+We determine \(\alpha\) by imposing
+\[
+\bigl(I - uv^\top\bigr)\,\bigl(I - \alpha\,u\,v^\top\bigr) \;=\; I.
+\]
+Multiply out the left‐hand side:
+\[
+(I - uv^\top)(I - \alpha\,u\,v^\top)
+\;=\;
+I \;-\;\alpha\,u\,v^\top \;-\;u\,v^\top 
+\;+\;\alpha\,\bigl(uv^\top\bigr)\bigl(uv^\top\bigr).
+\]
+Since \( (uv^\top)(uv^\top) = u\,(v^\top u)\,v^\top,\) the product becomes
+\[
+I \;-\;u\,v^\top 
+\;-\;\alpha\,u\,v^\top
+\;+\;\alpha\,(v^\top u)\,u\,v^\top 
+\;=\;
+I 
+\;+\;
+u\,v^\top\,\bigl[-1 - \alpha + \alpha\,\bigl(v^\top u\bigr)\bigr].
+\]
+For this to equal the identity \(I\), the scalar factor in brackets must be zero:
+\[
+-1 \;-\;\alpha \;+\;\alpha\,(v^\top u)
+\;=\;0
+\;\;\Longrightarrow\;\;
+\alpha\,\bigl(v^\top u - 1\bigr)
+\;=\;1
+\;\;\Longrightarrow\;\;
+\alpha
+\;=\;
+\frac{1}{v^\top u \;-\; 1}.
+\]
+Hence the desired inverse is
+\[
+A^{-1}
+\;=\;
+I \;-\;\frac{1}{\,v^\top u - 1\,}\,u\,v^\top.
+\]
+
+\textbf{Part (ii)}
+
+Since \(uv^\top\) is rank \(1\) (unless \(u=0\) or \(v=0\)), it is singular for \(n>1\).  Hence
+\[
+\det(uv^\top) \;=\; 0.
+\]
+The trace of \(uv^\top\) is the sum of its diagonal elements:
+\[
+\operatorname{Tr}(uv^\top)
+\;=\;\sum_{i=1}^n (uv^\top)_{ii} 
+\;=\;\sum_{i=1}^n u_i\,v_i
+\;=\;v^\top u.
+\]
+
+\textbf{Part (iii)}
+
+
+
+Consider the following product of three block matrices:
+\[
+\begin{pmatrix}
+I & 0\\
+v^\top & 1
+\end{pmatrix}
+\begin{pmatrix}
+I+u\,v^\top & u\\
+0 & 1
+\end{pmatrix}
+\begin{pmatrix}
+I & 0\\[-4pt]
+-\,v^\top & 1
+\end{pmatrix}.
+\]
+The first and third factors are block‐triangular with diagonal entries \(I\) and \(1,\) so each has determinant \(1.\)  
+Their product in the middle is exactly the matrix \(\bigl(I + uv^\top\bigr)\) padded by the row/column \(\bigl(u;0\bigr)\) and \(\bigl(0^\top;1\bigr)\).  
+Carrying out the block‐multiplication on the left‐hand side shows that the result is
+\[
+\begin{pmatrix}
+I & u\\[4pt]
+0 & 1 + v^\top u
+\end{pmatrix}.
+\]
+This last matrix is again block‐triangular with determinant \(1\cdot\bigl(1 + v^\top u\bigr) = 1 + v^\top u.\)
+
+Because the first and third factors have determinant \(1,\) the determinant of the middle factor,
+\(\det(I + uv^\top)\), must be \(1 + v^\top u.\)
+
+
+\textbf{Part (iv)}
+
+Factor out \(B\) from the left:
+\[
+B + uv^\top
+\;=\;
+B\,\bigl(I + B^{-1}u\,v^\top\bigr).
+\]
+Taking determinants and applying part (iii) to \(\bigl(I + B^{-1}u\,v^\top\bigr)\) yields
+\[
+\det\bigl(B + uv^\top\bigr)
+\;=\;
+\det(B)\,\det\bigl(I + B^{-1}u\,v^\top\bigr)
+\;=\;
+\det(B)\,\Bigl(1 + v^\top\,B^{-1}u\Bigr).
+\]
+% Hence
+% \[
+% \boxed{
+% \det\bigl(I + uv^\top\bigr) \;=\; 1 + v^\top u,
+% \qquad
+% \det\bigl(B + uv^\top\bigr)
+% \;=\;
+% \det(B)\,\bigl(1 + v^\top B^{-1}u\bigr).
+% }
+% \]
+
+
+
+
+\end{homeworkProblem}
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+
+
+
+    Let the SVD of \(A\) be
+    \[
+    A \;=\; \sum_{i=1}^{r} \sigma_i\,u_i\,v_i^\top,
+    \]
+    where \(\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_r > 0\) are the nonzero singular values of \(A\), and \(u_i\), \(v_i\) are the corresponding left and right singular vectors, respectively.  We define
+    \[
+    A_k \;=\;\sum_{i=1}^{k} \sigma_i\,u_i\,v_i^\top
+    \]
+    as the rank-\(k\) partial sum (the ``best'' rank-\(k\) approximation in the sense we aim to prove).
+
+    Since \(\mathrm{rank}(B)=k\), the null space of \(B\), \(\mathrm{Null}(B)\), has dimension at least \(n-k\).  In particular, we can choose a subspace
+    \[
+    \mathcal{X} \;\subseteq\; \mathrm{span}\{\,u_{k+1},u_{k+2},\dots,u_r\}
+    \]
+    of dimension 1 (i.e.\ spanned by a single suitable \(u_j\) with \(j>k\)) so that
+    \(
+    \mathcal{X}\,\cap\,\mathrm{Null}(B)\;\neq\;\{0\}.
+    \)
+    Hence there exists a nonzero vector \(x_0 \in \mathcal{X}\,\cap\,\mathrm{Null}(B)\).  Because \(x_0\in\mathrm{Null}(B)\), we have \(Bx_0=0\).  Therefore,
+    \[
+    (A - B)x_0 \;=\; A\,x_0 - B\,x_0 \;=\; A\,x_0.
+    \]
+    But \(x_0\) lies in the subspace spanned by \(\{u_{k+1},\dots,u_r\}\).  For any \(j>k\), the smallest singular value among \(\sigma_1,\dots,\sigma_r\) that is ``active'' in that subspace is \(\sigma_{k+1}\).  
+    A convenient way to see why 
+\[
+\|A\,x_{0}\|_{2}\;\ge\;\sigma_{k+1}\,\|x_{0}\|_{2}
+\]
+holds (when \(x_{0}\) lies in the span of \(\{\,u_{k+1},\dots,u_{r}\}\)) is to exploit the fact that the columns \(u_{1},\dots,u_{r}\) of \(U\) diagonalize the symmetric matrix \(AA^{T}\).  Concretely, from the SVD
+\[
+A \;=\;U\,\Sigma\,V^{\!\top},
+\]
+one has
+\[
+A\,A^{\!\top}
+\;=\;
+U\,\Sigma\,V^{\!\top}\,V\,\Sigma\,U^{\!\top}
+\;=\;
+U\,\bigl(\Sigma\,\Sigma\bigr)\,U^{\!\top},
+\]
+and each \(u_{j}\) is an eigenvector of \(A\,A^{\!\top}\) with eigenvalue \(\sigma_{j}^{2}\).  
+
+Hence if 
+\[
+x_{0} \;=\;\sum_{j=k+1}^{r}\alpha_{j}\,u_{j}
+\quad
+(\alpha_{j}\in\mathbb{R}),
+\]
+then 
+\[
+A\,A^{\!\top}\,x_{0}
+\;=\;
+\sum_{j=k+1}^{r}\alpha_{j}\,A\,A^{\!\top}\,u_{j}
+\;=\;
+\sum_{j=k+1}^{r}\alpha_{j}\,\sigma_{j}^{2}\,u_{j}.
+\]
+It follows that 
+\[
+\|A\,x_{0}\|_{2}^{2}
+\;=\;
+x_{0}^{\!\top}
+\bigl(A\,A^{\!\top}\bigr)\,x_{0}
+\;=\;
+\sum_{j=k+1}^{r}\sigma_{j}^{2}\,\alpha_{j}^{2}.
+\]
+Because
+\(\sigma_{k+1}\le\sigma_{k+2}\le\cdots\le\sigma_{r}\) in this indexing,  
+we have \(\sigma_{j}\ge\sigma_{k+1}\) for \(j\ge k+1\).  Hence
+\[
+\sum_{j=k+1}^{r}\sigma_{j}^{2}\,\alpha_{j}^{2}
+\;\;\ge\;\;
+\sigma_{k+1}^{2}\,\sum_{j=k+1}^{r}\alpha_{j}^{2}
+\;=\;
+\sigma_{k+1}^{2}\,\bigl\|x_{0}\bigr\|_{2}^{2}.
+\]
+Taking square‐roots then immediately gives 
+\[
+\|A\,x_{0}\|_{2}
+\;\ge\;
+\sigma_{k+1}\,\|x_{0}\|_{2},
+\]
+as claimed.
+    Hence
+    \[
+    \bigl\|(A-B)\,x_0\bigr\|_2 \;=\;\|A\,x_0\|_2 \;\ge\; \sigma_{k+1}\,\|x_0\|_2.
+    \]
+    Since \(x_0\neq 0\), this implies
+    \[
+    \|A-B\|_2 \;=\;\sup_{x\neq 0}\,\frac{\|(A-B)x\|_2}{\|x\|_2}
+    \;\;\ge\;\;\frac{\|(A-B)x_0\|_2}{\|x_0\|_2}
+    \;\;\ge\;\;\sigma_{k+1}.
+    \]
+    Thus for every rank-\(k\) matrix \(B\),
+    \[
+    \|A - B\|_2 \;\ge\; \sigma_{k+1}.
+    \]
+    
+  
+    Consider \(B = A_k=\sum_{i=1}^k \sigma_i\,u_i\,v_i^\top.\)  Then
+    \[
+    A - A_k \;=\; \sum_{i=1}^r \sigma_i\,u_i\,v_i^\top \;-\;\sum_{i=1}^k \sigma_i\,u_i\,v_i^\top
+    \;=\; \sum_{i=k+1}^r \sigma_i\,u_i\,v_i^\top.
+    \]
+    By straightforward properties of the spectral norm (or by direct SVD arguments), the norm of
+    \(\sum_{i=k+1}^r \sigma_i\,u_i\,v_i^\top\)
+    is exactly \(\sigma_{k+1}\), because its largest singular value is \(\sigma_{k+1}\).  Hence
+    \[
+    \|A - A_k\|_2 \;=\;\sigma_{k+1}.
+    \]
+    Therefore, this shows
+    \[
+    \min_{\mathrm{rank}(B)=k}\,\|A-B\|_2
+    \;=\;\|A-A_k\|_2
+    \;=\;\sigma_{k+1}.
+    \]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+
+    \textbf{Part (i)}
+
+    The rank of the feature matrix $\mX$ is 253. Given that the dataset has 257 features, this suggests that $\mX$ has some collinearity but is still relatively full-rank. This means that using least squares regression is feasible but might be sensitive to noise or ill-conditioning. Regularization methods like ridge regression or lasso regression could help improve stability and generalization.
+
+
+    \textbf{Part (ii)}
+
+    We observe that using truncated SVD (say 5-SVD) can reduce the MSE dramatically from the full rank SVD least square case. This might suggest that most features are not important and can be dropped.
+    \begin{center}
+        \begin{tabular}{|l|r|}
+        \hline
+        Model & MSE \\
+        \hline
+        Least Squares & 42418.75 \\
+        Ridge ($\lambda=0.1$) & 115.40 \\
+        Ridge ($\lambda=1$) & 84.18 \\
+        Ridge ($\lambda=10$) & 42.08 \\
+        Ridge ($\lambda=100$) & 30.85 \\
+        Lasso ($\lambda=0.1$) & 27.23 \\
+        Lasso ($\lambda=1$) & 20.50 \\
+        Lasso ($\lambda=10$) & 20.88 \\
+        Lasso ($\lambda=100$) & 24.23 \\
+        Kernel Ridge (linear) & 84.20 \\
+        Kernel Ridge (poly) & 97.67 \\
+        Kernel Ridge (gaussian) & 45.07 \\
+        Least Squares (Partial SVD) & 22.65 \\
+        \hline
+        \end{tabular}
+    \end{center}
+
+
+    % \textbf{Part (iii)}
+\end{homeworkProblem}
+
+
+% \maketitle
+
+% \pagebreak
+
+% \begin{homeworkProblem}
+%     \solution
+
+%     To find the least squares estimator, we should minimize our Residual Sum
+%     of Squares, RSS:
+
+%     \[
+%         \begin{split}
+%             RSS &= \sum_{i = 1}^{n} {(Y_i - \hat{Y_i})}^2
+%             \\
+%             &= \sum_{i = 1}^{n} {(Y_i - \hat{\beta_1} x_i)}^2
+%         \end{split}
+%     \]
+
+%     By taking the partial derivative in respect to \(\hat{\beta_1}\), we get:
+
+%     \[
+%         \pderiv{
+%             \hat{\beta_1}
+%         }{RSS}
+%         = -2 \sum_{i = 1}^{n} {x_i (Y_i - \hat{\beta_1} x_i)}
+%         = 0
+%     \]
+
+%     This gives us:
+
+%     \[
+%         \begin{split}
+%             \sum_{i = 1}^{n} {x_i (Y_i - \hat{\beta_1} x_i)}
+%             &= \sum_{i = 1}^{n} {x_i Y_i} - \sum_{i = 1}^{n} \hat{\beta_1} x_i^2
+%             \\
+%             &= \sum_{i = 1}^{n} {x_i Y_i} - \hat{\beta_1}\sum_{i = 1}^{n} x_i^2
+%         \end{split}
+%     \]
+
+%     Solving for \(\hat{\beta_1}\) gives the final estimator for \(\beta_1\):
+
+%     \[
+%         \begin{split}
+%             \hat{\beta_1}
+%             &= \frac{
+%                 \sum {x_i Y_i}
+%             }{
+%                 \sum x_i^2
+%             }
+%         \end{split}
+%     \]
+
+%     \pagebreak
+
+%     \part
+
+%     Calculate the bias and the variance for the estimated slope
+%     \(\hat{\beta_1}\).
+%     \\
+
+%     \solution
+
+%     For the bias, we need to calculate the expected value
+%     \(\E[\hat{\beta_1}]\):
+
+%     \[
+%         \begin{split}
+%             \E[\hat{\beta_1}]
+%             &= \E \left[ \frac{
+%                 \sum {x_i Y_i}
+%             }{
+%                 \sum x_i^2
+%             }\right]
+%             \\
+%             &= \frac{
+%                 \sum {x_i \E[Y_i]}
+%             }{
+%                 \sum x_i^2
+%             }
+%             \\
+%             &= \frac{
+%                 \sum {x_i (\beta_1 x_i)}
+%             }{
+%                 \sum x_i^2
+%             }
+%             \\
+%             &= \frac{
+%                 \sum {x_i^2 \beta_1}
+%             }{
+%                 \sum x_i^2
+%             }
+%             \\
+%             &= \beta_1 \frac{
+%                 \sum {x_i^2 \beta_1}
+%             }{
+%                 \sum x_i^2
+%             }
+%             \\
+%             &= \beta_1
+%         \end{split}
+%     \]
+
+%     Thus since our estimator's expected value is \(\beta_1\), we can conclude
+%     that the bias of our estimator is 0.
+%     \\
+
+%     For the variance:
+
+%     \[
+%         \begin{split}
+%             \Var[\hat{\beta_1}]
+%             &= \Var \left[ \frac{
+%                 \sum {x_i Y_i}
+%             }{
+%                 \sum x_i^2
+%             }\right]
+%             \\
+%             &=
+%             \frac{
+%                 \sum {x_i^2}
+%             }{
+%                 \sum x_i^2 \sum x_i^2
+%             } \Var[Y_i]
+%             \\
+%             &=
+%             \frac{
+%                 \sum {x_i^2}
+%             }{
+%                 \sum x_i^2 \sum x_i^2
+%             } \Var[Y_i]
+%             \\
+%             &=
+%             \frac{
+%                 1
+%             }{
+%                 \sum x_i^2
+%             } \Var[Y_i]
+%             \\
+%             &=
+%             \frac{
+%                 1
+%             }{
+%                 \sum x_i^2
+%             } \sigma^2
+%             \\
+%             &=
+%             \frac{
+%                 \sigma^2
+%             }{
+%                 \sum x_i^2
+%             }
+%         \end{split}
+%     \]
+
+% \end{homeworkProblem}
+
+\pagebreak
+
+% \begin{homeworkProblem}
+%     Prove a polynomial of degree \(k\), \(a_kn^k + a_{k - 1}n^{k - 1} + \hdots
+%     + a_1n^1 + a_0n^0\) is a member of \(\Theta(n^k)\) where \(a_k \hdots a_0\)
+%     are nonnegative constants.
+
+%     \begin{proof}
+%         To prove that \(a_kn^k + a_{k - 1}n^{k - 1} + \hdots + a_1n^1 +
+%         a_0n^0\), we must show the following:
+
+%         \[
+%             \exists c_1 \exists c_2 \forall n \geq n_0,\ {c_1 \cdot g(n) \leq
+%             f(n) \leq c_2 \cdot g(n)}
+%         \]
+
+%         For the first inequality, it is easy to see that it holds because no
+%         matter what the constants are, \(n^k \leq a_kn^k + a_{k - 1}n^{k - 1} +
+%         \hdots + a_1n^1 + a_0n^0\) even if \(c_1 = 1\) and \(n_0 = 1\).  This
+%         is because \(n^k \leq c_1 \cdot a_kn^k\) for any nonnegative constant,
+%         \(c_1\) and \(a_k\).
+%         \\
+
+%         Taking the second inequality, we prove it in the following way.
+%         By summation, \(\sum\limits_{i=0}^k a_i\) will give us a new constant,
+%         \(A\). By taking this value of \(A\), we can then do the following:
+
+%         \[
+%             \begin{split}
+%                 a_kn^k + a_{k - 1}n^{k - 1} + \hdots + a_1n^1 + a_0n^0 &=
+%                 \\
+%                 &\leq (a_k + a_{k - 1} \hdots a_1 + a_0) \cdot n^k
+%                 \\
+%                 &= A \cdot n^k
+%                 \\
+%                 &\leq c_2 \cdot n^k
+%             \end{split}
+%         \]
+
+%         where \(n_0 = 1\) and \(c_2 = A\). \(c_2\) is just a constant. Thus the
+%         proof is complete.
+%     \end{proof}
+% \end{homeworkProblem}
+
+% \pagebreak
+
+
+
+\end{document}

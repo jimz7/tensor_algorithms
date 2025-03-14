@@ -1,0 +1,699 @@
+\documentclass{article}
+
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\usepackage[round]{natbib}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+
+
+\input{../math.tex}
+\usetikzlibrary{automata,positioning}
+
+%
+% Basic Document Settings
+%
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName}
+\chead{\hmwkClass\ }
+\rhead{\firstxmark}
+\lfoot{\lastxmark}
+\cfoot{\thepage}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+%
+% Homework Problem Environment
+%
+% This environment takes an optional argument. When given, it will adjust the
+% problem counter. This is useful for when the problems given for your
+% assignment aren't sequential. See the last 3 problems of this template for an
+% example.
+%
+\newenvironment{homeworkProblem}[1][-1]{
+    \ifnum#1>0
+        \setcounter{homeworkProblemCounter}{#1}
+    \fi
+    \section{Problem \arabic{homeworkProblemCounter}}
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+%
+% Homework Details
+%   - Title
+%   - Due date
+%   - Class
+%   - Section/Time
+%   - Instructor
+%   - Author
+%
+
+\newcommand{\hmwkTitle}{Homework 1}
+\newcommand{\hmwkDueDate}{February 7, 2015}
+\newcommand{\hmwkClass}{CS395T Matrix and Tensor Algorithms}
+\newcommand{\hmwkClassTime}{Section A}
+\newcommand{\hmwkClassInstructor}{Professor Shashanka Ubaru}
+\newcommand{\hmwkAuthorName}{}
+
+%
+% Title Page
+%
+
+% \title{
+%     \vspace{2in}
+%     \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+%     \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate\ at 3:10pm}\\
+%     \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+%     \vspace{3in}
+% }
+
+% \author{\hmwkAuthorName}
+% \date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% Various Helper Commands
+%
+
+% Useful for algorithms
+\newcommand{\alg}[1]{\textsc{\bfseries \footnotesize #1}}
+
+% For derivatives
+\newcommand{\deriv}[1]{\frac{\mathrm{d}}{\mathrm{d}x} (#1)}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+
+% Integral dx
+\newcommand{\dx}{\mathrm{d}x}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+
+\newcommand{\Bias}{\mathrm{Bias}}
+
+\begin{document}
+
+\begin{homeworkProblem}
+    \solution
+    
+    \textbf{Part (i)}
+    Let \( S \in \mathbb{R}^{m\times d} \) be a random matrix with entries 
+    \[
+    S_{ij} = \pm \frac{1}{\sqrt{m}},
+    \]
+    each occurring with probability \( 1/2 \) independently. For any \( x \in \mathbb{R}^d \) define
+    \[
+    y = Sx, \quad y_i = \sum_{j=1}^d S_{ij} x_j.
+    \]
+    Then,
+    \[
+    \|Sx\|_2^2 = \sum_{i=1}^m y_i^2.
+    \]
+    
+    Since \( \mathbb{E}[S_{ij}]=0 \) and \( \mathbb{E}[S_{ij}^2]=1/m \), we have
+    \[
+    \mathbb{E}\left[y_i^2\right] = \sum_{j=1}^d x_j^2\,\mathbb{E}[S_{ij}^2] = \frac{1}{m}\|x\|_2^2.
+    \]
+    Summing over \( i \) gives
+    \[
+    \mathbb{E}\left[\|Sx\|_2^2\right] = m \cdot \frac{1}{m}\|x\|_2^2 = \|x\|_2^2.
+    \]
+    
+    Define \( Y = \sum_{j=1}^d S_{1j} x_j \) for a fixed row. Then
+    \[
+    \|Sx\|_2^2 = \sum_{i=1}^m Y_i^2,
+    \]
+    where the \( Y_i \) are independent. 
+    Obserbe that \( \mathbb{E}[Y^4] \) is the following:
+    \[
+    Y^4 = \left(\sum_{j=1}^d S_{1j}x_j\right)^4.
+    \]
+    We can show that
+    \[
+    \mathbb{E}[Y^4] = \frac{1}{m^2}\sum_{j=1}^d x_j^4 + \frac{6}{m^2}\sum_{1\le j<k\le d} x_j^2 x_k^2 
+    =\frac{1}{m^2}\left[ \|x\|_4^4 + 3\Bigl(\|x\|_2^4-\|x\|_4^4\Bigr) \right]
+    =\frac{1}{m^2}\Bigl[3\|x\|_2^4-2\|x\|_4^4\Bigr].
+    \]
+    Thus, the variance of \( Y^2 \) is
+    \[
+    \operatorname{Var}[Y^2] = \mathbb{E}[Y^4] - \Bigl(\mathbb{E}[Y^2]\Bigr)^2 
+    = \frac{1}{m^2}\Bigl[3\|x\|_2^4-2\|x\|_4^4\Bigr] - \frac{1}{m^2}\|x\|_2^4 
+    = \frac{2}{m^2}\Bigl[\|x\|_2^4-\|x\|_4^4\Bigr].
+    \]
+    Since the \( m \) rows are independent, we have
+    \[
+    \operatorname{Var}\bigl[\|Sx\|_2^2\bigr] = m\,\operatorname{Var}[Y^2]
+    =\frac{2}{m}\Bigl[\|x\|_2^4-\|x\|_4^4\Bigr] \le \frac{2}{m}\|x\|_4^4.
+    \]
+
+
+
+
+
+
+
+
+    \textbf{Part (ii)}
+
+    Using Chebyshev's inequality, we have
+    \[
+    \Pr\left[|\|Sx\|_2^2 - \|x\|_2^2| \geq \epsilon \|x\|_2^2\right] \leq \frac{\operatorname{Var}\bigl[\|Sx\|_2^2\bigr]}{\epsilon^2 \|x\|_2^4}.
+    \]
+    From the previous result, we know that
+    \[
+    \operatorname{Var}\bigl[\|Sx\|_2^2\bigr] \leq \frac{2}{m}\|x\|_4^4.
+    \]
+    Thus,
+    \[
+    \Pr\left[|\|Sx\|_2^2 - \|x\|_2^2| \geq \epsilon \|x\|_2^2\right] \leq \frac{2}{m\epsilon^2}\cdot\frac{\|x\|_4^4}{\|x\|_2^4}.
+    \]
+    Since for any \( x\in\mathbb{R}^d \) the norm inequality \( \|x\|_4 \le \|x\|_2 \) holds, we have
+    \[
+    \frac{\|x\|_4^4}{\|x\|_2^4} \leq 1.
+    \]
+    Hence,
+    \[
+    \Pr\left[|\|Sx\|_2^2 - \|x\|_2^2| \geq \epsilon \|x\|_2^2\right] \leq \frac{2}{m\epsilon^2}.
+    \]
+    Set
+    \[
+    \frac{2}{m\epsilon^2} \leq \delta \quad \Longrightarrow \quad m \ge \frac{2}{\delta \epsilon^2}.
+    \]
+    Therefore, choose
+    \[
+    m = O\left(\frac{1}{\delta \epsilon^2}\right),
+    \]
+    we obtain
+    \[
+    \Pr\left[|\|Sx\|_2^2 - \|x\|_2^2| \geq \epsilon \|x\|_2^2\right] \leq \delta.
+    \]
+
+
+
+
+
+
+
+
+
+
+
+    \textbf{Part (iii)}
+
+    Let \( S \in \mathbb{R}^{m \times d} \) be a random matrix with i.i.d. entries 
+\[
+S_{ij} = \pm \frac{1}{\sqrt{m}}
+\]
+(with each sign chosen independently with probability \(1/2\)), and let \( x,y \in \mathbb{R}^d \). We wish to show that
+\[
+\Pr\Bigl[\,\Bigl|\langle Sx, Sy \rangle - \langle x,y \rangle\Bigr| \ge \epsilon \|x\|_2\|y\|_2\,\Bigr] \le \delta,
+\]
+provided that \( m = O\Bigl(\frac{1}{\delta\epsilon^2}\Bigr) \).
+
+Since \(S\) is linear and its entries are symmetric, for any fixed \(x,y\) we have
+\[
+\langle Sx, Sy \rangle = \sum_{i=1}^m (Sx)_i(Sy)_i,
+\]
+where
+\[
+(Sx)_i = \sum_{j=1}^d S_{ij} x_j \quad \text{and} \quad (Sy)_i = \sum_{j=1}^d S_{ij} y_j.
+\]
+Observe that
+\[
+\mathbb{E}[(Sx)_i(Sy)_i] = \frac{1}{m} \langle x,y \rangle,
+\]
+so that
+\[
+\mathbb{E}[\langle Sx, Sy \rangle] = \sum_{i=1}^m \mathbb{E}[(Sx)_i(Sy)_i] = m \cdot \frac{1}{m}\langle x,y \rangle = \langle x,y \rangle.
+\]
+
+
+Similar to \textbf{Part (i)}, we knows that the variance of the inner product is upper bounded by
+\[
+\operatorname{Var}[\langle Sx,Sy \rangle] \le \frac{2}{m}\|x\|_2^2\|y\|_2^2.
+\]
+using the independence of the rows of \(S\).
+
+By Chebyshev's inequality,
+\[
+\Pr\Bigl[\,\Bigl|\langle Sx, Sy \rangle - \langle x,y \rangle\Bigr| \ge \epsilon \|x\|_2\|y\|_2\,\Bigr]
+\le \frac{\operatorname{Var}[\langle Sx,Sy \rangle]}{\epsilon^2 \|x\|_2^2\|y\|_2^2}
+\le \frac{2}{m\epsilon^2}.
+\]
+Choose \(m\) so that
+\[
+\frac{2}{m\epsilon^2} \le \delta,
+\]
+which is equivalent to
+\[
+m \ge \frac{2}{\delta\epsilon^2}.
+\]
+Thus, taking
+\[
+m = O\Bigl(\frac{1}{\delta\epsilon^2}\Bigr)
+\]
+guarantees that
+\[
+\Pr\Bigl[\,\Bigl|\langle Sx, Sy \rangle - \langle x,y \rangle\Bigr| \ge \epsilon \|x\|_2\|y\|_2\,\Bigr] \le \delta.
+\]
+
+
+
+
+
+
+
+
+
+
+
+
+    
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+
+    Define 
+    \[
+    Z = HD,
+    \]
+    so that \(S = PZ\) and 
+    \[
+    S^\top S = Z^\top P^\top P Z.
+    \]
+    Because \(H\) is orthogonal and \(D\) is a sign–matrix, 
+    \[
+    Z^\top Z = D^\top H^\top H D = I.
+    \]
+    Since \(\mathbb{E}[P^\top P] = \frac{m}{n}I\), we have
+    \[
+    \mathbb{E}[S^\top S] = Z^\top \,\mathbb{E}[P^\top P]\, Z = \frac{m}{n}Z^\top Z = \frac{m}{n}I.
+    \]
+    Hence, 
+    \[
+    \mathbb{E}\bigl[B S^\top S A\bigr] = B\Bigl(\frac{m}{n}I\Bigr) A = \frac{m}{n}\,BA.
+    \]
+    Thus, define the unbiased estimator
+    \[
+    \widehat{BA} = \frac{n}{m} B S^\top S A,
+    \]
+    then
+    \[
+    \mathbb{E}[\widehat{BA}] = BA,
+    \]
+
+    The error matrix of the estimator is
+    \[
+    E = \widehat{BA} - BA = \frac{n}{m} B S^\top S A - BA.
+    \]
+    Note that
+    \[
+    BA = \sum_{i=1}^n B_{*,i}A_{i,*},
+    \]
+    The action of \(S^\top S\) can be written in coordinates as follows. Let
+    \[
+    \xi_i = \begin{cases} 1, & \text{if row } i \text{ is sampled (i.e., }(P^\top P)_{ii}=1\text{)}, \\ 0, & \text{otherwise.} \end{cases}
+    \]
+    Then,
+    \[
+    S^\top S = \sum_{i=1}^n \xi_i\, z_i^\top z_i,
+    \]
+    where \(z_i^\top\) denotes the \(i\)th row of \(Z = HD\). Hence,
+    \[
+    B S^\top S A = \sum_{i=1}^n \xi_i\, B\, (z_i^\top z_i) \,A.
+    \]
+    Define
+    \[
+    X_i = \frac{n}{m}\,\xi_i\, B_{*,i}A_{i,*} \quad\text{and}\quad \mathbb{E}[X_i] = B_{*,i}A_{i,*},
+    \]
+    so that
+    \[
+    \widehat{BA} = \sum_{i=1}^n X_i.
+    \]
+    Then the error is
+    \[
+    E = \sum_{i=1}^n (X_i - \mathbb{E}[X_i]).
+    \]
+    And we want to bound
+    \[
+    \mathbb{E}\Bigl[\|E\|_F^2\Bigr] = \mathbb{E}\left[\left\|\sum_{i=1}^n \Bigl( X_i - \mathbb{E}[X_i] \Bigr)\right\|_F^2\right].
+    \]
+    
+    For a fixed \(i\), note that
+    \[
+    X_i - \mathbb{E}[X_i] = \frac{n}{m}\,(\xi_i - \mathbb{E}[\xi_i])\,B_{*,i}\,A_{i,*}.
+    \]
+    Thus, by definition,
+    \[
+    \mathbb{E}\Bigl[\|X_i - \mathbb{E}[X_i]\|_F^2\Bigr]
+    = \left(\frac{n}{m}\right)^2\,\mathbb{E}\Bigl[|\xi_i - \mathbb{E}[\xi_i]|^2\Bigr]\,\|B_{*,i}\,A_{i,*}\|_F^2.
+    \]
+    Since \(\xi_i\) is a Bernoulli random variable with \(\Pr[\xi_i=1] = \frac{m}{n}\), we have
+    \[
+    \mathbb{E}\Bigl[|\xi_i - \mathbb{E}[\xi_i]|^2\Bigr] = \frac{m}{n}\left(1 - \frac{m}{n}\right).
+    \]
+    Thus,
+    \[
+    \mathbb{E}\Bigl[\|X_i - \mathbb{E}[X_i]\|_F^2\Bigr] \le \left(\frac{n}{m}\right)^2\,\frac{m}{n}\left(1 - \frac{m}{n}\right)\,\|B_{*,i}\,A_{i,*}\|_F^2 
+    \le \frac{n}{m}\,\|B_{*,i}\,A_{i,*}\|_F^2.
+    \]
+    Summing over \(i\) yields
+    \[
+    \mathbb{E}\Bigl[\|E\|_F^2\Bigr] \le \frac{n}{m}\,\sum_{i=1}^n \|B_{*,i}\,A_{i,*}\|_F^2.
+    \]
+    
+    SRHT mixing lemma in Lecture~8 implies that for any fixed \(x\in\mathbb{R}^n\), with high probability the vector
+    \[
+    z = H\,D\,x
+    \]
+    satisfies
+    \[
+    |z_i|^2 \le \frac{c\,\log(n/\delta')}{n}\,\|x\|_2^2 \quad \text{for all } i,
+    \]
+    for some constant \(c>0\). When this property is applied to the columns of \(B\) and rows of \(A\), it implies that the quantities \(\|B_{*,i}\|\) and \(\|A_{i,*}\|\) are nearly balanced, so that
+    \[
+    \sum_{i=1}^n \|B_{*,i}\,A_{i,*}\|_F^2 \le \frac{c\,\log(n/\delta')}{n}\,\|B\|_F^2\,\|A\|_F^2.
+    \]
+    Thus, the overall error is bounded by
+    \[
+    \mathbb{E}\Bigl[\|E\|_F^2\Bigr] \le \frac{n}{m}\cdot \frac{c\,\log(n/\delta')}{n}\,\|B\|_F^2\,\|A\|_F^2 
+    = \frac{c\,\log(n/\delta')}{m}\,\|B\|_F^2\,\|A\|_F^2.
+    \]
+    Choosing
+    \[
+    m \ge \frac{c\,d\,\log(n/\delta')}{\epsilon^2},
+    \]
+    ensures that
+    \[
+    \mathbb{E}\Bigl[\|E\|_F^2\Bigr] \le \frac{\epsilon^2}{d}\,\|B\|_F^2\,\|A\|_F^2.
+    \]
+    Union bounding over the \(\epsilon\)-net, we have
+    \[
+    m = O\!\Bigl(\frac{d\,\log(n/\delta')\,\log(nd/\delta)}{\epsilon^2}\Bigr) = O\!\Bigl(\frac{d\,\log^2(nd/\delta)}{\epsilon^2}\Bigr).
+    \]
+    
+
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+ 
+    \textbf{Part (i)}
+Let 
+\[
+\mathcal{H}_k = \operatorname{span}(H_k) \quad \text{and} \quad \mathcal{H}_{n-k} = \mathcal{H}_k^\perp.
+\]
+% Since \( H_kH_k^\top \) is the orthogonal projection onto \(\mathcal{H}_k\), we have for any \( x \in \mathbb{R}^n \)
+% \[
+% \| (I - H_kH_k^\top)A x \|_2 \le \max_{z \in \mathcal{H}_{n-k},\,\|z\|=1} \| z^\top A \|_2 \,.
+% \]
+Given any unit vector \( x \in \mathbb{R}^n \) we can decompose it as
+\[
+x = \alpha y + \beta z, \quad \text{with } y \in \mathcal{H}_k,\; z \in \mathcal{H}_{n-k} \quad \text{and} \quad \alpha^2 + \beta^2 = 1.
+\]
+Since \( H_kH_k^\top y = y \) and \( H_kH_k^\top z = 0 \), we obtain
+\[
+(I - H_kH_k^\top)x = \beta z.
+\]
+Then,
+\[
+\|(I - H_kH_k^\top)A x\|_2 = |\beta|\, \| z^\top A \|_2 \le \| z^\top A \|_2,
+\]
+and taking the maximum over all \( x \) (which corresponds to maximizing over unit \( z \in \mathcal{H}_{n-k} \)) yields
+\[
+\| A - H_kH_k^\top A \|_2 = \| (I-H_kH_k^\top)A \|_2 \le \max_{z\in\mathcal{H}_{n-k},\,\|z\|=1} \| z^\top A \|_2.
+\]
+
+\textbf{Part (ii)}
+Denote by
+\[
+\lambda_1 \ge \lambda_2 \ge \cdots \ge \lambda_n \ge 0
+\]
+the eigenvalues of \( AA^\top \). Recall that the best rank-\(k\) approximation error in the spectral norm is given by
+\[
+\|A-A_k\|_2^2 = \lambda_{k+1}.
+\]
+
+Let \( \mu_1 \ge \mu_2 \ge \cdots \ge \mu_n \ge 0 \) be the eigenvalues of \( CC^\top \). The Hoffman-Wielandt inequality shows that
+\[
+\max_{i=1,\dots,n} |\lambda_i - \mu_i| \le \|AA^\top - CC^\top\|_2.
+\]
+Therefore, for \( i=k+1 \) we have
+\[
+|\lambda_{k+1} - \mu_{k+1}| \le \|AA^\top - CC^\top\|_2,
+\]
+which implies
+\[
+\mu_{k+1} \le \lambda_{k+1} + \|AA^\top - CC^\top\|_2.
+\]
+
+% Now, note that the algorithm computes \( H_k \) from \( C \) by forming the top \( k \) singular vectors (or equivalently, the top \( k \) eigenvectors of \( CC^\top \)). In an ideal scenario where \( H_k \) exactly spanned the top \( k \) eigenvectors of \( AA^\top \), any \( z \) orthogonal to \( H_k \) would satisfy
+% \[
+% z^\top AA^\top z \le \lambda_{k+1}.
+% \]
+% In our setting, \( H_k \) is only an approximate basis. However, because \( H_k \) is computed from \( C \) and the eigen-structure of \( CC^\top \) approximates that of \( AA^\top \), the following argument holds.
+
+Since \( z \in \mathcal{H}_{n-k} \), we have
+\[
+z^\top CC^\top z \le \mu_{k+1}.
+\]
+Then, decompose
+\[
+z^\top AA^\top z = z^\top CC^\top z + z^\top (AA^\top - CC^\top)z.
+\]
+Since \( z^\top (AA^\top - CC^\top)z \le \|AA^\top - CC^\top\|_2 \), it follows that
+\[
+z^\top AA^\top z \le \mu_{k+1} + \|AA^\top - CC^\top\|_2.
+\]
+Substitute the bound on \(\mu_{k+1}\) obtained earlier, we have
+\[
+z^\top AA^\top z \le \lambda_{k+1} + 2\|AA^\top - CC^\top\|_2.
+\]
+Recal that \(\lambda_{k+1} = \|A-A_k\|_2^2\), we get
+\[
+\|z^\top A\|_2^2 = z^\top AA^\top z \le \|A-A_k\|_2^2 + 2\|AA^\top - CC^\top\|_2.
+\]
+
+\textbf{Part (iii)}
+
+Combining the results from parts (i) and (ii), we obtain
+\[
+\|A - H_kH_k^\top A\|_2^2 \le \max_{z\in\mathcal{H}_{n-k},\,\|z\|=1}\|z^\top A\|_2^2 \le \|A-A_k\|_2^2 + 2\|AA^\top - CC^\top\|_2.
+\]
+
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+  
+    Let
+\[
+\lambda_1 \ge \lambda_2 \ge \cdots \ge \lambda_d \ge 0
+\]
+be the eigenvalues of the PSD matrix \(A\). Then, the best rank-\(k\) approximation \(A_k\) is given by
+\[
+A_k = U \operatorname{diag}(\lambda_1, \dots, \lambda_k, 0, \dots, 0) U^T,
+\]
+Define eigenvalue vector of \(A_k\) is
+\[
+\mathbf{v}_k = (\lambda_1, \dots, \lambda_k, 0, \dots, 0).
+\]
+
+Recall
+\[
+\|A - A_k\|_F^2 = \sum_{i=k+1}^d \lambda_i^2
+\]
+and
+\[
+\operatorname{Tr}(A) = \sum_{i=1}^d \lambda_i.
+\]
+
+For \(i=k+1,\dots,d\), since \(\lambda_i \le \lambda_{k+1}\), we have
+\[
+\lambda_i^2 \le \lambda_{k+1}\lambda_i.
+\]
+Thus,
+\[
+\sum_{i=k+1}^d \lambda_i^2 \le \lambda_{k+1}\sum_{i=k+1}^d \lambda_i,
+\]
+meaning,
+\[
+\|A - A_k\|_F^2 \le \lambda_{k+1}\sum_{i=k+1}^d \lambda_i.
+\]
+
+We also notice that
+\[
+\lambda_{k+1} \le \frac{1}{k}\sum_{i=1}^k \lambda_i.
+\]
+Therefore,
+\[
+\|A - A_k\|_F^2 \le \frac{1}{k}\left(\sum_{i=1}^k \lambda_i\right)\left(\sum_{i=k+1}^d \lambda_i\right).
+\]
+
+Let
+\[
+a = \sum_{i=1}^k \lambda_i \quad \text{and} \quad b = \sum_{i=k+1}^d \lambda_i,
+\]
+so that \(\operatorname{Tr}(A) = a + b\). For fixed \(a + b\), the product \(ab\) is maximized when \(a = b = \frac{\operatorname{Tr}(A)}{2}\). Hence,
+\[
+ab \le \left(\frac{\operatorname{Tr}(A)}{2}\right)^2 = \frac{(\operatorname{Tr}(A))^2}{4}.
+\]
+Thus,
+\[
+\|A - A_k\|_F^2 \le \frac{1}{k} \cdot \frac{(\operatorname{Tr}(A))^2}{4} = \frac{(\operatorname{Tr}(A))^2}{4k}.
+\]
+
+Taking the square root of both sides, we have
+\[
+\|A - A_k\|_F \le \frac{1}{2\sqrt{k}}\,\operatorname{Tr}(A).
+\]
+    
+\end{homeworkProblem}
+
+
+\begin{homeworkProblem}
+\solution
+
+\textbf{Part (i)}
+
+The code is in the .ipynb notebook.
+
+\textbf{Part (ii)}
+
+I observe that when the sketch size is small (say 300), Countsketch is performing worse than Gaussiansketch under MSE metric. When we increase the sketch size (say 100000), their performances are almost the same.
+
+\textbf{Part (iii)}
+
+The code is in the .ipynb notebook. The MSE for preconditioned Least Square is much larger than the normal least square. 
+
+\textbf{Part (iv)}
+
+From my implementation, preconditioning does not help. I think it is possible that the matrix inversion step introduced big errors.
+
+
+
+
+
+
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
