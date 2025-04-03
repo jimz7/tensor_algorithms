@@ -1,0 +1,477 @@
+\documentclass{article}
+
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\usepackage[round]{natbib}
+\usepackage{hyperref}
+\usepackage{amssymb}
+
+
+
+
+\input{../math.tex}
+\usetikzlibrary{automata,positioning}
+
+%
+% Basic Document Settings
+%
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName}
+\chead{\hmwkClass\ }
+\rhead{\firstxmark}
+\lfoot{\lastxmark}
+\cfoot{\thepage}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+%
+% Homework Problem Environment
+%
+% This environment takes an optional argument. When given, it will adjust the
+% problem counter. This is useful for when the problems given for your
+% assignment aren't sequential. See the last 3 problems of this template for an
+% example.
+%
+\newenvironment{homeworkProblem}[1][-1]{
+    \ifnum#1>0
+        \setcounter{homeworkProblemCounter}{#1}
+    \fi
+    \section{Problem \arabic{homeworkProblemCounter}}
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+%
+% Homework Details
+%   - Title
+%   - Due date
+%   - Class
+%   - Section/Time
+%   - Instructor
+%   - Author
+%
+
+\newcommand{\hmwkTitle}{Homework 1}
+\newcommand{\hmwkDueDate}{February 7, 2015}
+\newcommand{\hmwkClass}{CS395T Matrix and Tensor Algorithms}
+\newcommand{\hmwkClassTime}{Section A}
+\newcommand{\hmwkClassInstructor}{Professor Shashanka Ubaru}
+\newcommand{\hmwkAuthorName}{}
+
+%
+% Title Page
+%
+
+% \title{
+%     \vspace{2in}
+%     \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+%     \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate\ at 3:10pm}\\
+%     \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+%     \vspace{3in}
+% }
+
+% \author{\hmwkAuthorName}
+% \date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% Various Helper Commands
+%
+
+% Useful for algorithms
+\newcommand{\alg}[1]{\textsc{\bfseries \footnotesize #1}}
+
+% For derivatives
+\newcommand{\deriv}[1]{\frac{\mathrm{d}}{\mathrm{d}x} (#1)}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+
+% Integral dx
+\newcommand{\dx}{\mathrm{d}x}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+
+\newcommand{\Bias}{\mathrm{Bias}}
+
+\begin{document}
+
+\begin{homeworkProblem}
+    \solution
+
+    We are given an \(n \times d\) matrix \(\mathbf{A}\) with singular value decomposition
+\[
+\mathbf{A} = \mathbf{U}\Sigma \mathbf{V}^\top,
+\]
+where \(\Sigma = \operatorname{diag}(\sigma_1,\sigma_2,\dots,\sigma_d)\) with \(\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_d\), and \(\mathbf{v}_1,\mathbf{v}_2,\dots,\mathbf{v}_d\) denote the right singular vectors. Let \(\mathbf{x}\) be a unit vector satisfying
+\[
+|\mathbf{x}^\top \mathbf{v}_1| \ge \eta,
+\]
+and write \(\mathbf{x}\) in the \(\{\mathbf{v}_i\}\) basis:
+\[
+\mathbf{x} = \sum_{i=1}^d \alpha_i \mathbf{v}_i, \quad \text{with } \sum_{i=1}^d \alpha_i^2 = 1 \quad \text{and } |\alpha_1| \ge \eta.
+\]
+
+After \(q\) iterations of the power method, the iterate is
+\[
+\mathbf{z} = \frac{(\mathbf{A}^\top \mathbf{A})^q \mathbf{x}}{\|(\mathbf{A}^\top \mathbf{A})^q \mathbf{x}\|}.
+\]
+Since \(\mathbf{A}^\top \mathbf{A} = \mathbf{V}\Sigma^2 \mathbf{V}^\top\), it follows that
+\[
+(\mathbf{A}^\top \mathbf{A})^q \mathbf{x} = \sum_{i=1}^d \alpha_i \sigma_i^{2q} \mathbf{v}_i.
+\]
+Thus, we have
+\[
+\mathbf{z} = \frac{\sum_{i=1}^d \alpha_i \sigma_i^{2q} \mathbf{v}_i}{\left(\sum_{i=1}^d \alpha_i^2 \sigma_i^{4q}\right)^{1/2}}.
+\]
+
+Let \(W\) be the subspace spanned by the singular vectors corresponding to singular values \(\sigma_i \ge (1-\epsilon)\sigma_1\) (say, for \(i=1,\ldots, m\)). Then, the component of \(\mathbf{z}\) perpendicular to \(W\) is given by
+\[
+\mathbf{z}_\perp = \frac{\sum_{i>m} \alpha_i \sigma_i^{2q} \mathbf{v}_i}{\left(\sum_{i=1}^d \alpha_i^2 \sigma_i^{4q}\right)^{1/2}},
+\]
+and we have
+\[
+\|\mathbf{z}_\perp\|^2 = \frac{\sum_{i>m} \alpha_i^2 \sigma_i^{4q}}{\sum_{i=1}^d \alpha_i^2 \sigma_i^{4q}}.
+\]
+
+Since for every \(i>m\) we have \(\sigma_i < (1-\epsilon)\sigma_1\), we have
+\[
+\sum_{i>m} \alpha_i^2 \sigma_i^{4q} \le \sum_{i>m} \alpha_i^2 \left((1-\epsilon)\sigma_1\right)^{4q} \le \left((1-\epsilon)\sigma_1\right)^{4q}.
+\]
+Since \(|\alpha_1| \ge \eta\), we have
+\[
+\sum_{i=1}^d \alpha_i^2 \sigma_i^{4q} \ge \alpha_1^2 \sigma_1^{4q} \ge \eta^2 \sigma_1^{4q}.
+\]
+Thus,
+\[
+\|\mathbf{z}_\perp\|^2 \le \frac{\left((1-\epsilon)\sigma_1\right)^{4q}}{\eta^2 \sigma_1^{4q}} = \frac{(1-\epsilon)^{4q}}{\eta^2}.
+\]
+
+Choose
+\[
+q = \frac{\log(1/(\epsilon\eta))}{2\epsilon}.
+\]
+Using the inequality \(1-\epsilon \le e^{-\epsilon}\), we have
+\[
+(1-\epsilon)^{4q} \le e^{-4q\epsilon} = e^{-4\epsilon\cdot \frac{\log(1/(\epsilon\eta))}{2\epsilon}} = e^{-2\log(1/(\epsilon\eta))} = (\epsilon\eta)^2.
+\]
+Therefore, we obtain
+\[
+\|\mathbf{z}_\perp\|^2 \le \frac{(\epsilon\eta)^2}{\eta^2} = \epsilon^2,
+\]
+and therefore,
+\[
+\|\mathbf{z}_\perp\| \le \epsilon.
+\]
+
+% This shows that the component of \(\mathbf{z}\) perpendicular to \(W\) is at most \(\epsilon\), as required.
+
+
+
+
+    
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+    % We conducted extensive experiments on the MNIST dataset using three different Bi-Level algorithms: Mixed, Dynamic Barrier, and PCGrad. For each method, we trained a multi-layer perceptron (MLP) using the Adam optimizer with a learning rate of 3e-4. All experiments were conducted in full-batch training for 100 epochs. We evaluated two different auxiliary loss functions: $f(\mathbf{x}) = L_{\text{test}}$, and $f(\mathbf{x}) = \frac{1}{2}||\theta^2||$ where $\theta$ is the parameters of the network. 
+    % For each setting, we plotted the comparison of different metrics including training accuracy, test accuracy, auxiliary loss, main loss gradient norm $||\nabla g(\mathbf{x_k})||^2$, projection norm $\left\| \nabla_{\parallel} f(\mathbf{x}_k) \right\|^2$, and orthogonal component norm $\left\| \nabla_{\perp} f(\mathbf{x}_k) \right\|^2$
+    % under different regularization parameters $\lambda$ logarithmically spaced between $10^{-4}$ and $1$.
+   
+
+
+
+
+
+\end{homeworkProblem}
+
+
+
+% We conducted extensive experiments on the MNIST dataset using three different optimization methods: Mixed, Dynamic Barrier, and PCGrad. For each method, we trained a multi-layer perceptron (MLP) with architecture [784-256-128-10] using the Adam optimizer with a learning rate of 3e-4. All experiments were conducted in the full-batch training regime (batch\_size = -1) for 100 epochs. We evaluated four different auxiliary loss functions: L0.5 norm regularization, test loss as auxiliary objective, L2 norm regularization, and Lipschitz constant upper bound. For each configuration, 
+% we explored nine different trade-off parameters $\lambda$ logarithmically spaced between $10^{-4}$ and $10^0$, allowing us to thoroughly investigate the Pareto front of the competing objectives. For all methods, we set the exponential moving average (EMA) parameter to 1, and initialized the auxiliary gradient using the "grad" initialization scheme. The experiments were designed to compare the effectiveness of different multi-objective optimization approaches across various regularization schemes. For each configuration, we tracked multiple metrics including training loss, test accuracy, auxiliary loss values, and gradient-related metrics (main gradient norm, projection norm, and orthogonal component norm) to provide comprehensive insights into the optimization dynamics.
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+
+    \textbf{Part (a)}
+    
+    % From the tensor slices:
+    \[
+    \mathcal{A}_{2,:,:} = 
+    \begin{bmatrix}
+    \mathcal{A}_{2,:,1} \\
+    \mathcal{A}_{2,:,2}
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+    8 & 2 & 3 \\
+    5 & 6 & 4
+    \end{bmatrix}
+    \quad \text{and} \quad
+    \mathcal{A}_{2,3,:} = 
+    \begin{bmatrix}
+    \mathcal{A}_{2,3,1} \\
+    \mathcal{A}_{2,3,2}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    3 \\
+    4
+    \end{bmatrix}
+    \]
+
+   
+    
+    \textbf{Part (b) }
+    We vectorize the tensor by stacking each frontal slice column-wise and then stacking the slices:
+    \[
+    \mathrm{vec}(\mathcal{A}) =
+    \begin{bmatrix}
+    3 \\ 8 \\ 4 \\ 9 \\ 2 \\ 3 \\ 1 \\ 3 \\ 9 \\
+    6 \\ 5 \\ 1 \\ 9 \\ 6 \\ 4 \\ 5 \\ 4 \\ 7
+    \end{bmatrix}
+    \]
+
+
+    
+    \textbf{Part (c) }
+    The mode-2 unfolding $\mathbf{A}_{(2)}$ treats rows as mode-2 fibers:
+    \[
+    \mathbf{A}_{(2)} = 
+    \begin{bmatrix}
+    3 & 6 & 9 & 9 & 1 & 5 \\
+    8 & 5 & 2 & 6 & 3 & 4 \\
+    4 & 1 & 3 & 4 & 9 & 7
+    \end{bmatrix}
+    \]
+
+    The mode-3 unfolding $\mathbf{A}_{(3)}$ stacks each $i,j$ location across slices:
+    \[
+    \mathbf{A}_{(3)} = 
+    \begin{bmatrix}
+    3 & 6 \\
+    9 & 9 \\
+    1 & 5 \\
+    8 & 5 \\
+    2 & 6 \\
+    3 & 4 \\
+    4 & 1 \\
+    3 & 4 \\
+    9 & 7
+    \end{bmatrix}
+    \]
+
+
+
+    \textbf{Part (d) }
+    
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+
+    \textbf{Part (a) }
+    Let
+\[
+A = [a_1, a_2, \dots, a_n] \quad \text{and} \quad B = [b_1, b_2, \dots, b_n],
+\]
+where \(a_i\) and \(b_i\) denote the \(i\)-th columns of \(A\) and \(B\). 
+% The Khatri-Rao product is defined as the columnwise Kronecker product:
+% \[
+% B \odot A = \begin{bmatrix} b_1 \otimes a_1 & b_2 \otimes a_2 & \cdots & b_n \otimes a_n \end{bmatrix}.
+% \]
+
+% \subsection*{1. Proof that \((B \odot A)^\top (B \odot A) = B^\top B \ast A^\top A\)}
+
+The \((i,j)\)-th entry of \((B \odot A)^\top (B \odot A)\) is
+\[
+\left[(B \odot A)^\top (B \odot A)\right]_{ij} = (b_i \otimes a_i)^\top (b_j \otimes a_j).
+\]
+Using the property of the Kronecker product,
+% \[
+% (x \otimes y)^\top = x^\top \otimes y^\top,
+% \]
+we have
+\[
+(b_i \otimes a_i)^\top (b_j \otimes a_j) = \left(b_i^\top \otimes a_i^\top\right)(b_j \otimes a_j).
+\]
+Then using the other property of the Kronecker product,
+\[
+(b_i^\top \otimes a_i^\top)(b_j \otimes a_j) = (b_i^\top b_j)(a_i^\top a_j).
+\]
+Thus, the \((i,j)\)-th entry is
+\[
+\left[(B \odot A)^\top (B \odot A)\right]_{ij} = (b_i^\top b_j)(a_i^\top a_j).
+\]
+This is exactly the \((i,j)\)-th entry of the Hadamard (elementwise) product \(B^\top B \ast A^\top A\). Hence,
+\[
+(B \odot A)^\top (B \odot A) = B^\top B \ast A^\top A.
+\]
+\qed
+% \subsection*{2. Proof that \((B \otimes A)(D \odot C) = (BD) \odot (AC)\)}
+
+\textbf{Part (b) }
+Let
+\[
+C = [c_1, c_2, \dots, c_n] \quad \text{and} \quad D = [d_1, d_2, \dots, d_n],
+\]
+so that the Khatri-Rao product is given by
+\[
+D \odot C = \begin{bmatrix} d_1 \otimes c_1 & d_2 \otimes c_2 & \cdots & d_n \otimes c_n \end{bmatrix}.
+\]
+Consider the product of \((B \otimes A)\) with the \(k\)-th column of \((D \odot C)\):
+\[
+(B \otimes A)(d_k \otimes c_k).
+\]
+By the properties of the Kronecker product, we have
+\[
+(B \otimes A)(d_k \otimes c_k) = (B d_k) \otimes (A c_k).
+\]
+Since this holds for each column \(k = 1, 2, \dots, n\), it follows that
+\[
+(B \otimes A)(D \odot C) = \begin{bmatrix} (B d_1) \otimes (A c_1) & (B d_2) \otimes (A c_2) & \cdots & (B d_n) \otimes (A c_n) \end{bmatrix}.
+\]
+By the definition of the Khatri-Rao product, the right-hand side is exactly
+\[
+(BD) \odot (AC),
+\]
+since the \(k\)-th column of \((BD) \odot (AC)\) is \((B d_k) \otimes (A c_k)\). Therefore,
+\[
+(B \otimes A)(D \odot C) = (BD) \odot (AC).
+\]
+
+
+    
+\end{homeworkProblem}
+
+
+
+\begin{homeworkProblem}
+    \solution
+
+    \textbf{Part (a) }
+    
+    
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
