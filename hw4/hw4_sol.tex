@@ -1,0 +1,439 @@
+\documentclass{article}
+
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\usepackage[round]{natbib}
+\usepackage{hyperref}
+\usepackage{amssymb}
+
+
+
+
+\input{../math.tex}
+\usetikzlibrary{automata,positioning}
+
+%
+% Basic Document Settings
+%
+
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1}
+
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName}
+\chead{\hmwkClass\ }
+\rhead{\firstxmark}
+\lfoot{\lastxmark}
+\cfoot{\thepage}
+
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\setlength\parindent{0pt}
+
+%
+% Create Problem Sections
+%
+
+\newcommand{\enterProblemHeader}[1]{
+    \nobreak\extramarks{}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+}
+
+\newcommand{\exitProblemHeader}[1]{
+    \nobreak\extramarks{Problem \arabic{#1} (continued)}{Problem \arabic{#1} continued on next page\ldots}\nobreak{}
+    \stepcounter{#1}
+    \nobreak\extramarks{Problem \arabic{#1}}{}\nobreak{}
+}
+
+\setcounter{secnumdepth}{0}
+\newcounter{partCounter}
+\newcounter{homeworkProblemCounter}
+\setcounter{homeworkProblemCounter}{1}
+\nobreak\extramarks{Problem \arabic{homeworkProblemCounter}}{}\nobreak{}
+
+%
+% Homework Problem Environment
+%
+% This environment takes an optional argument. When given, it will adjust the
+% problem counter. This is useful for when the problems given for your
+% assignment aren't sequential. See the last 3 problems of this template for an
+% example.
+%
+\newenvironment{homeworkProblem}[1][-1]{
+    \ifnum#1>0
+        \setcounter{homeworkProblemCounter}{#1}
+    \fi
+    \section{Problem \arabic{homeworkProblemCounter}}
+    \setcounter{partCounter}{1}
+    \enterProblemHeader{homeworkProblemCounter}
+}{
+    \exitProblemHeader{homeworkProblemCounter}
+}
+
+%
+% Homework Details
+%   - Title
+%   - Due date
+%   - Class
+%   - Section/Time
+%   - Instructor
+%   - Author
+%
+
+\newcommand{\hmwkTitle}{Homework 1}
+\newcommand{\hmwkDueDate}{February 7, 2015}
+\newcommand{\hmwkClass}{CS395T Matrix and Tensor Algorithms}
+\newcommand{\hmwkClassTime}{Section A}
+\newcommand{\hmwkClassInstructor}{Professor Shashanka Ubaru}
+\newcommand{\hmwkAuthorName}{}
+
+%
+% Title Page
+%
+
+% \title{
+%     \vspace{2in}
+%     \textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+%     \normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate\ at 3:10pm}\\
+%     \vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+%     \vspace{3in}
+% }
+
+% \author{\hmwkAuthorName}
+% \date{}
+
+\renewcommand{\part}[1]{\textbf{\large Part \Alph{partCounter}}\stepcounter{partCounter}\\}
+
+%
+% Various Helper Commands
+%
+
+% Useful for algorithms
+\newcommand{\alg}[1]{\textsc{\bfseries \footnotesize #1}}
+
+% For derivatives
+\newcommand{\deriv}[1]{\frac{\mathrm{d}}{\mathrm{d}x} (#1)}
+
+% For partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial}{\partial #1} (#2)}
+
+% Integral dx
+\newcommand{\dx}{\mathrm{d}x}
+
+% Alias for the Solution section header
+\newcommand{\solution}{\textbf{\large Solution}}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+
+\newcommand{\Bias}{\mathrm{Bias}}
+
+\begin{document}
+
+\begin{homeworkProblem}
+    \solution
+
+    \section*{Problem}
+
+    \textbf{Part 1}
+
+The coherence $\mu(A)$ of a matrix $A \in \mathbb{R}^{N \times r}$ is defined as the \textit{maximum leverage score} of $A$, i.e.,
+\[
+\mu(A) = \max_{i \in [N]} \|P_A e_i\|_2^2,
+\]
+where $P_A = A(A^\top A)^{-1}A^\top$ is the orthogonal projector onto the column space of $A$, and $e_i$ is the $i$th standard basis vector.
+
+% Prove the following:
+
+% \begin{enumerate}
+%     \item $\mu(A \otimes B) = \mu(A)\mu(B)$
+%     \item $\mu(A \odot B) \leq \mu(A)\mu(B)$
+% \end{enumerate}
+
+% \section*{Solution}
+
+% \subsection*{1. Coherence of the Kronecker product}
+
+
+Let $A \in \mathbb{R}^{N \times r}$ and $B \in \mathbb{R}^{M \times r}$. Consider their Kronecker product $A \otimes B \in \mathbb{R}^{NM \times r^2}$. We assume $A$ and $B$ are both full rank.
+
+Let $P_A = A(A^\top A)^{-1}A^\top$ and similarly for $B$. 
+Recall the Kronecker product properties:
+\begin{itemize}
+    \item $(A \otimes B)^\top = A^\top \otimes B^\top$
+    \item $(A \otimes B)(C \otimes D) = (AC) \otimes (BD)$
+    \item $(A \otimes B)^{-1} =  A^{-1} \otimes B^{-1}$
+\end{itemize}
+
+Using these identities, we have:
+\[
+\begin{aligned}
+P_{A \otimes B} &= (A \otimes B)((A \otimes B)^\top(A \otimes B))^{-1}(A \otimes B)^\top \\
+&= (A \otimes B)\left[(A^\top A)^{-1} \otimes (B^\top B)^{-1}\right](A^\top \otimes B^\top) \\
+&= \left[A (A^\top A)^{-1} A^\top\right] \otimes \left[B (B^\top B)^{-1} B^\top\right] \\
+&= P_A \otimes P_B
+\end{aligned}
+\]
+
+% This identity reflects the fact that projecting onto the Kronecker product space corresponds to projecting onto the tensor product of the individual column spaces, and projections compose naturally under Kronecker product.
+
+ Let $e_{i,j} = e_i^A \otimes e_j^B$, where $e_i^A \in \mathbb{R}^N$, $e_j^B \in \mathbb{R}^M$ are standard basis vectors. Then:
+\[
+\|P_{A \otimes B} (e_i^A \otimes e_j^B)\|_2^2 = \|(P_A e_i^A) \otimes (P_B e_j^B)\|_2^2 = \|P_A e_i^A\|_2^2 \cdot \|P_B e_j^B\|_2^2.
+\]
+Therefore, we have
+\[
+\mu(A \otimes B) = \max_{i,j} \|P_A e_i^A\|_2^2 \cdot \|P_B e_j^B\|_2^2 = \mu(A)\mu(B).
+\]
+
+% Let $A \in \mathbb{R}^{N \times r}$ and $B \in \mathbb{R}^{M \times r}$. Consider their Kronecker product $A \otimes B \in \mathbb{R}^{NM \times r^2}$. 
+
+% Let $P_A = A(A^\top A)^{-1}A^\top$ and similarly for $B$. Then we have the identity:
+% \[
+% P_{A \otimes B} = P_A \otimes P_B.
+% \]
+% Let $e_{i,j} = e_i^A \otimes e_j^B$, where $e_i^A \in \mathbb{R}^N$, $e_j^B \in \mathbb{R}^M$ are standard basis vectors. Then:
+% \[
+% \|P_{A \otimes B} (e_i^A \otimes e_j^B)\|_2^2 = \|(P_A e_i^A) \otimes (P_B e_j^B)\|_2^2 = \|P_A e_i^A\|_2^2 \cdot \|P_B e_j^B\|_2^2.
+% \]
+% Therefore, the coherence is:
+% \[
+% \mu(A \otimes B) = \max_{i,j} \|P_A e_i^A\|_2^2 \cdot \|P_B e_j^B\|_2^2 = \mu(A)\mu(B).
+% \]
+
+\textbf{Part 2}
+
+Recall that the Khatri-Rao product $A \odot B \in \mathbb{R}^{NM \times r}$ is defined column-wise as:
+\[
+A \odot B = [a_1 \otimes b_1, \ldots, a_r \otimes b_r],
+\]
+where $a_k$ and $b_k$ are the $k$th columns of $A \in \mathbb{R}^{N \times r}$ and $B \in \mathbb{R}^{M \times r}$ respectively.
+
+Let $C = A \odot B \in \mathbb{R}^{NM \times r}$, and let $P_C = C(C^\top C)^{-1}C^\top$ be the projection onto its column space. The coherence is given by:
+\[
+\mu(C) = \max_{i,j} \|P_C (e_i^A \otimes e_j^B)\|_2^2.
+\]
+
+% Let us analyze the leverage score at the row corresponding to $e_i^A \otimes e_j^B$, which is the $(i,j)$-th index in $[N] \times [M]$.
+
+and we know that
+\[
+P_C (e_i^A \otimes e_j^B) = C(C^\top C)^{-1} C^\top (e_i^A \otimes e_j^B).
+\]
+
+Since each column of $C$ is of the form $c_k = a_k \otimes b_k$, then
+\[
+C^\top (e_i^A \otimes e_j^B) = 
+\begin{bmatrix}
+\langle a_1 \otimes b_1, e_i^A \otimes e_j^B \rangle \\
+\vdots \\
+\langle a_r \otimes b_r, e_i^A \otimes e_j^B \rangle
+\end{bmatrix}
+=
+\begin{bmatrix}
+a_1(i) b_1(j) \\
+\vdots \\
+a_r(i) b_r(j)
+\end{bmatrix}.
+\]
+
+So define the vector:
+\[
+v_{i,j} := \begin{bmatrix} a_1(i) b_1(j) \\ \vdots \\ a_r(i) b_r(j) \end{bmatrix} \in \mathbb{R}^r.
+\]
+
+Then:
+\[
+P_C (e_i^A \otimes e_j^B) = C(C^\top C)^{-1} v_{i,j}.
+\]
+
+Thus, the leverage score is:
+\[
+\|P_C (e_i^A \otimes e_j^B)\|_2^2 = \|C(C^\top C)^{-1} v_{i,j}\|_2^2.
+\]
+
+Use Cauchy-Schwarz inequality and we have:
+\[
+\|P_C (e_i^A \otimes e_j^B)\|_2^2 \leq \|C(C^\top C)^{-1}\|_2^2 \cdot \|v_{i,j}\|_2^2.
+\]
+
+Observe that:
+\[
+\|v_{i,j}\|_2^2 = \sum_{k=1}^r a_k(i)^2 b_k(j)^2 \leq \left(\sum_{k=1}^r a_k(i)^2\right) \cdot \left(\sum_{k=1}^r b_k(j)^2\right) = \|A_{i,:}\|_2^2 \cdot \|B_{j,:}\|_2^2.
+\]
+
+where \( A_{i,:} \) is the $i$th row of $A$, and \( B_{i,:} \) is the $i$th row of $B$.
+
+Note that \( \|A_{i,:}\|_2^2 = \|P_A e_i^A\|_2^2 \leq \mu(A) \), and \( \|B_{j,:}\|_2^2 \leq \mu(B) \).
+
+Therefore,
+\[
+\|v_{i,j}\|_2^2 \leq \mu(A)\mu(B).
+\]
+
+Since \( \|C(C^\top C)^{-1}\|_2 \leq \sigma_{\min}(C)^{-1} \), and \( \|P_C\|_2 = 1 \), we conclude:
+\[
+\mu(C) = \max_{i,j} \|P_C (e_i^A \otimes e_j^B)\|_2^2 \leq \mu(A)\mu(B).
+\]
+
+% Recall that the Khatri-Rao product $A \odot B \in \mathbb{R}^{NM \times r}$ is defined column-wise as:
+% \[
+% A \odot B = [a_1 \otimes b_1, \ldots, a_r \otimes b_r],
+% \]
+% where $a_k$ and $b_k$ are the $k$th columns of $A$ and $B$ respectively.
+
+% Let $C = A \odot B$. The leverage score at position $(i,j)$ corresponds to the index $k = (j-1)N + i$, and we have:
+% \[
+% \|P_C (e_i^A \otimes e_j^B)\|_2^2 \leq \mu(C).
+% \]
+% Let us denote $P_C = C(C^\top C)^{-1}C^\top$.
+
+% Unlike the Kronecker product, the Khatri-Rao product has column $c_k = a_k \otimes b_k$, so we have:
+% \[
+% \langle c_k, e_i^A \otimes e_j^B \rangle = a_k(i) b_k(j).
+% \]
+% Then:
+% \[
+% \|P_C (e_i^A \otimes e_j^B)\|_2^2 = \sum_{k,\ell} (C^\top C)^{-1}_{k\ell} \cdot a_k(i) b_k(j) \cdot a_\ell(i) b_\ell(j).
+% \]
+% This is a more complicated expression than in the Kronecker case. However, we can use the fact that for any orthonormal basis $Q$ for the column space of $C$,
+% \[
+% \mu(C) = \max_{i,j} \|Q^\top (e_i^A \otimes e_j^B)\|_2^2 \leq \max_{i,j} \sum_{k=1}^r (q_k^\top (e_i^A \otimes e_j^B))^2,
+% \]
+% and using properties of tensor products and column normalization, one can show (see literature such as Eldar and Kuppinger) that:
+% \[
+% \mu(A \odot B) \leq \mu(A)\mu(B).
+% \]
+
+% \hfill $\blacksquare$
+
+
+
+    
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+    
+    The work is in the Colab notebook.
+   
+    
+    
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{homeworkProblem}
+    \solution
+
+    The work is in the Colab notebook.
+    
+    
+\end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \begin{homeworkProblem}
+%     \solution
+
+%     \textbf{Part (a)} 
+
+   
+
+% \textbf{Part (b)}
+
+
+    
+% \end{homeworkProblem}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
