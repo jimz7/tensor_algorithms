@@ -237,10 +237,127 @@ and therefore,
 
 \begin{homeworkProblem}
     \solution
-    % We conducted extensive experiments on the MNIST dataset using three different Bi-Level algorithms: Mixed, Dynamic Barrier, and PCGrad. For each method, we trained a multi-layer perceptron (MLP) using the Adam optimizer with a learning rate of 3e-4. All experiments were conducted in full-batch training for 100 epochs. We evaluated two different auxiliary loss functions: $f(\mathbf{x}) = L_{\text{test}}$, and $f(\mathbf{x}) = \frac{1}{2}||\theta^2||$ where $\theta$ is the parameters of the network. 
-    % For each setting, we plotted the comparison of different metrics including training accuracy, test accuracy, auxiliary loss, main loss gradient norm $||\nabla g(\mathbf{x_k})||^2$, projection norm $\left\| \nabla_{\parallel} f(\mathbf{x}_k) \right\|^2$, and orthogonal component norm $\left\| \nabla_{\perp} f(\mathbf{x}_k) \right\|^2$
-    % under different regularization parameters $\lambda$ logarithmically spaced between $10^{-4}$ and $1$.
-   
+
+%     We wish to show that for a symmetric positive definite matrix 
+% \[
+% \mathbf{A} \in \mathbb{R}^{d \times d},
+% \]
+% and random vectors \(x_1,\dots,x_m \in \mathbb{R}^d\) with i.i.d. mean zero sub-Gaussian entries (with fixed sub-Gaussian parameter), the Hutchinson estimator
+% \[
+% \widetilde{\operatorname{Tr}}_m(\mathbf{A}) = \frac{1}{m} \sum_{l=1}^m x_l^\top \mathbf{A} x_l
+% \]
+% satisfies
+% \[
+% \Pr\Bigl[\bigl|\widetilde{\operatorname{Tr}}_m(\mathbf{A}) - \operatorname{Tr}(\mathbf{A})\bigr| \leq \epsilon\, \operatorname{Tr}(\mathbf{A})\Bigr] \geq 1 - \eta,
+% \]
+% provided that
+% \[
+% m \geq \frac{c' \log(2/\eta)}{\epsilon^2},
+% \]
+% for some constant \(c'>0\) (which depends on the sub-Gaussian parameter).
+
+% \subsection*{Step 1. Reformulation via a Block-Diagonal Matrix}
+
+Define the block-diagonal matrix 
+\[
+\mathbf{B} = \begin{pmatrix}
+\mathbf{A} & & \\
+& \ddots & \\
+& & \mathbf{A}
+\end{pmatrix} \in \mathbb{R}^{md \times md},
+\]
+with \(m\) copies of \(\mathbf{A}\) along the diagonal. Also define the concatenated random vector
+\[
+z = \begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_m \end{pmatrix} \in \mathbb{R}^{md}.
+\]
+Then we have
+\[
+z^\top \mathbf{B} z = \sum_{l=1}^m x_l^\top \mathbf{A} x_l,
+\]
+so that
+\[
+\widetilde{\operatorname{Tr}}_m(\mathbf{A}) = \frac{1}{m} \, z^\top \mathbf{B} z.
+\]
+Since each \(x_l\) satisfies
+\[
+\mathbb{E}\left[x_l^\top \mathbf{A} x_l\right] = \operatorname{Tr}(\mathbf{A}),
+\]
+we will have
+\[
+\mathbb{E}\Bigl[z^\top \mathbf{B} z\Bigr] = m\,\operatorname{Tr}(\mathbf{A}).
+\]
+
+% \subsection*{Step 2. Applying the Hanson--Wright Inequality}
+
+% The Hanson--Wright inequality (for a symmetric matrix \(\mathbf{B}\) and a random vector \(z\) with i.i.d.\ sub-Gaussian entries) tells us that for any \(t\ge 0\),
+% \[
+% \Pr\Bigl(\Bigl| z^\top \mathbf{B} z - \mathbb{E}[z^\top \mathbf{B} z] \Bigr| \geq t\Bigr)
+% \leq 2 \exp\!\left(-c \min\!\left(\frac{t^2}{\|\mathbf{B}\|_F^2}, \frac{t}{\|\mathbf{B}\|_2}\right)\right),
+% \]
+% where \(c>0\) is a universal constant (depending on the sub-Gaussian parameter).
+
+Note that due to the block-diagonal structure we have:
+\[
+\|\mathbf{B}\|_F^2 = m\,\|\mathbf{A}\|_F^2 \quad \text{and} \quad \|\mathbf{B}\|_2 = \|\mathbf{A}\|_2.
+\]
+
+We want the estimator to satisfy
+\[
+\left| \widetilde{\operatorname{Tr}}_m(\mathbf{A}) - \operatorname{Tr}(\mathbf{A}) \right| \leq \epsilon\, \left|\operatorname{Tr}(\mathbf{A})\right|.
+\]
+Since
+\[
+\widetilde{\operatorname{Tr}}_m(\mathbf{A}) = \frac{1}{m}\, z^\top \mathbf{B} z,
+\]
+this is equivalent to
+\[
+\left| z^\top \mathbf{B} z - m\, \operatorname{Tr}(\mathbf{A}) \right| \leq m\,\epsilon\, |\operatorname{Tr}(\mathbf{A})|.
+\]
+Thus, setting
+\[
+t = m\,\epsilon\,|\operatorname{Tr}(\mathbf{A})|,
+\]
+the Hanson--Wright inequality yields:
+\[
+\Pr\Bigl(\Bigl| z^\top \mathbf{B} z - m\, \operatorname{Tr}(\mathbf{A}) \Bigr| \geq m\,\epsilon\,|\operatorname{Tr}(\mathbf{A})|\Bigr)
+\leq 2 \exp\!\left(- c \min\!\left(\frac{m^2\epsilon^2\,\operatorname{Tr}(\mathbf{A})^2}{m\,\|\mathbf{A}\|_F^2}, \frac{m\,\epsilon\,\operatorname{Tr}(\mathbf{A})}{\|\mathbf{A}\|_2}\right)\right).
+\]
+equivalently,
+\[
+\Pr\Bigl(\Bigl| \widetilde{\operatorname{Tr}}_m(\mathbf{A}) - \operatorname{Tr}(\mathbf{A}) \Bigr| \geq \epsilon\, |\operatorname{Tr}(\mathbf{A})|\Bigr)
+\leq 2 \exp\!\left(- c \min\!\left(\frac{m\,\epsilon^2\,\operatorname{Tr}(\mathbf{A})^2}{\|\mathbf{A}\|_F^2}, \frac{m\,\epsilon\,\operatorname{Tr}(\mathbf{A})}{\|\mathbf{A}\|_2}\right)\right).
+\]
+
+Set
+\[
+2 \exp\!\left(- c \min\!\left(\frac{m\,\epsilon^2\,\operatorname{Tr}(\mathbf{A})^2}{\|\mathbf{A}\|_F^2}, \frac{m\,\epsilon\,\operatorname{Tr}(\mathbf{A})}{\|\mathbf{A}\|_2}\right)\right)
+\leq \eta.
+\]
+Taking log on both side and we have
+\[
+c \min\!\left(\frac{m\,\epsilon^2\,\operatorname{Tr}(\mathbf{A})^2}{\|\mathbf{A}\|_F^2}, \frac{m\,\epsilon\,\operatorname{Tr}(\mathbf{A})}{\|\mathbf{A}\|_2}\right)
+\geq \log\!\left(\frac{2}{\eta}\right).
+\]
+meaning
+\[
+m \geq \frac{1}{c} \max\!\left\{ \frac{\|\mathbf{A}\|_F^2}{\epsilon^2\,\operatorname{Tr}(\mathbf{A})^2}, \frac{\|\mathbf{A}\|_2}{\epsilon\,\operatorname{Tr}(\mathbf{A})} \right\} \log\!\left(\frac{2}{\eta}\right).
+\]
+Reorganize and absorb the constants into \(c'\) and we have
+\[
+m \geq \frac{c' \log(2/\eta)}{\epsilon^2},
+\]
+then
+\[
+\Pr\Bigl[\bigl|\widetilde{\operatorname{Tr}}_m(\mathbf{A}) - \operatorname{Tr}(\mathbf{A})\bigr| \leq \epsilon\, |\operatorname{Tr}(\mathbf{A})|\Bigr] \geq 1 - \eta.
+\]
+
+% \subsection*{Conclusion}
+
+% By considering the block-diagonal matrix and applying the Hanson--Wright inequality with the choice \(t = m\,\epsilon\,\operatorname{Tr}(\mathbf{A})\), we have shown that the Hutchinson estimator is \(\epsilon\)-accurate (relative to \(\operatorname{Tr}(\mathbf{A})\)) with probability at least \(1-\eta\) provided
+% \[
+% m \geq \frac{c' \log(2/\eta)}{\epsilon^2},
+% \]
+% which completes the proof.
 
 
 
@@ -298,7 +415,8 @@ and therefore,
    
     
     \textbf{Part (b) }
-    We vectorize the tensor by stacking each frontal slice column-wise and then stacking the slices:
+
+    % We vectorize the tensor by stacking each frontal slice column-wise and then stacking the slices:
     \[
     \mathrm{vec}(\mathcal{A}) =
     \begin{bmatrix}
@@ -314,9 +432,9 @@ and therefore,
     \[
     \mathbf{A}_{(2)} = 
     \begin{bmatrix}
-    3 & 6 & 9 & 9 & 1 & 5 \\
-    8 & 5 & 2 & 6 & 3 & 4 \\
-    4 & 1 & 3 & 4 & 9 & 7
+    3 & 8 & 4 & 6 & 5 & 1 \\
+    9 & 2 & 3 & 9 & 6 & 4 \\
+    1 & 3 & 9 & 5 & 4 & 7
     \end{bmatrix}
     \]
 
@@ -324,15 +442,8 @@ and therefore,
     \[
     \mathbf{A}_{(3)} = 
     \begin{bmatrix}
-    3 & 6 \\
-    9 & 9 \\
-    1 & 5 \\
-    8 & 5 \\
-    2 & 6 \\
-    3 & 4 \\
-    4 & 1 \\
-    3 & 4 \\
-    9 & 7
+    3 & 8 & 4 & 9 & 2 & 3 & 1 & 3 & 9 \\
+    6 & 5 & 1 & 9 & 6 & 4 & 5 & 4 & 7
     \end{bmatrix}
     \]
 
@@ -340,6 +451,16 @@ and therefore,
 
     \textbf{Part (d) }
     
+    \[
+    \|\mathcal{A}\|_F^2 = 
+    3^2 + 9^2 + 1^2 + 8^2 + 2^2 + 3^2 + 4^2 + 3^2 + 9^2 + 
+    6^2 + 9^2 + 5^2 + 5^2 + 6^2 + 4^2 + 1^2 + 4^2 + 7^2
+    \]
+
+    \[
+    = 559
+    \]
+
 \end{homeworkProblem}
 
 
@@ -362,6 +483,7 @@ and therefore,
     \solution
 
     \textbf{Part (a) }
+
     Let
 \[
 A = [a_1, a_2, \dots, a_n] \quad \text{and} \quad B = [b_1, b_2, \dots, b_n],
@@ -398,10 +520,11 @@ This is exactly the \((i,j)\)-th entry of the Hadamard (elementwise) product \(B
 \[
 (B \odot A)^\top (B \odot A) = B^\top B \ast A^\top A.
 \]
-\qed
+% \qed
 % \subsection*{2. Proof that \((B \otimes A)(D \odot C) = (BD) \odot (AC)\)}
 
 \textbf{Part (b) }
+
 Let
 \[
 C = [c_1, c_2, \dots, c_n] \quad \text{and} \quad D = [d_1, d_2, \dots, d_n],
@@ -440,9 +563,9 @@ since the \(k\)-th column of \((BD) \odot (AC)\) is \((B d_k) \otimes (A c_k)\).
 \begin{homeworkProblem}
     \solution
 
-    \textbf{Part (a) }
+    The work is in the Colab notebook.
     
-    
+
 \end{homeworkProblem}
 
 
